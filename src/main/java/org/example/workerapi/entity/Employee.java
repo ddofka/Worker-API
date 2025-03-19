@@ -2,7 +2,6 @@ package org.example.workerapi.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -11,7 +10,6 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
 @ToString
 public class Employee {
 
