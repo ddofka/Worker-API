@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.workerapi.entity.Department;
 import org.example.workerapi.entity.Employee;
 import org.example.workerapi.entity.Project;
+import org.example.workerapi.exception.EmployeeNotFoundException;
 import org.example.workerapi.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
@@ -95,11 +96,12 @@ public class EmployeeService {
     }
 
     public Employee patchEmployeeById(Long id, Employee employeeFromRequest) {
-        Optional<Employee> maybeEmployeeFromDb = employeeRepository.findById(id);
-        if (maybeEmployeeFromDb.isEmpty()) {
-            throw new EntityNotFoundException("Employee with id " + id + " not found");
-        }
-        Employee employeeFromDb = maybeEmployeeFromDb.get();
+        Employee employeeFromDb = employeeRepository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee with id " + id + " not found"));
+//        if (maybeEmployeeFromDb.isEmpty()) {
+//            throw new EntityNotFoundException("Employee with id " + id + " not found");
+//        }
+//        Employee employeeFromDb = maybeEmployeeFromDb.get();
 
         if (StringUtils.isNotBlank(employeeFromRequest.getPersonalCode()) &&
             !employeeFromRequest.getPersonalCode().equals(employeeFromDb.getPersonalCode())){
