@@ -1,16 +1,13 @@
 package org.example.workerapi.dto;
 
-import lombok.Data;
-
 import java.time.LocalDate;
 
-@Data
-public class CreateEmployeeRequest {
+public record CreateEmployeeRequest(
 
-    private String personalCode;
-    private String name;
-    private String lastName;
-    private String position;
-    private LocalDate birthDate;
-    private LocalDate worksFrom;
-}
+    String personalCode,
+    String name,
+    String lastName,
+    String position,
+    LocalDate birthDate,
+    LocalDate worksFrom
+){}
