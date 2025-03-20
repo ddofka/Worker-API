@@ -15,13 +15,13 @@ import java.util.List;
 public class EmployeeConverter {
 
     public GetEmployeeResponse entityToDto(Employee employee) {
-        GetEmployeeResponse response = new GetEmployeeResponse();
-        response.setId(employee.getId());
-        response.setLastName(employee.getLastName());
-        response.setWorksFrom(employee.getWorksFrom());
-        response.setDepartment(employee.getDepartment().getTitle());
-        response.setProject(employee.getProject().getTitle());
-        return response;
+        return new GetEmployeeResponse(
+                employee.getId(),
+                employee.getLastName(),
+                employee.getWorksFrom(),
+                employee.getDepartment().getTitle(),
+                employee.getProject().getTitle()
+        );
     }
 
     public List<GetEmployeeResponse> entityListToDto(List<Employee> employees){
@@ -34,12 +34,12 @@ public class EmployeeConverter {
 
     public Employee toEntity(CreateEmployeeRequest request) {
         Employee employee = new Employee();
-        employee.setName(request.getName());
-        employee.setPersonalCode(request.getPersonalCode());
-        employee.setLastName(request.getLastName());
-        employee.setBirthDate(request.getBirthDate());
-        employee.setWorksFrom(request.getWorksFrom());
-        employee.setPosition(request.getPosition());
+        employee.setName(request.name());
+        employee.setPersonalCode(request.personalCode());
+        employee.setLastName(request.lastName());
+        employee.setBirthDate(request.birthDate());
+        employee.setWorksFrom(request.worksFrom());
+        employee.setPosition(request.position());
         employee.setDepartment(new Department());
         employee.setProject(new Project());
         return employee;

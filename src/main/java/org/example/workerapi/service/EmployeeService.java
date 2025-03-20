@@ -117,11 +117,13 @@ public class EmployeeService {
                 !employeeFromRequest.getPosition().equals(employeeFromDb.getPosition())){
             employeeFromDb.setPosition(employeeFromRequest.getPosition());
         }
-        if (employeeFromRequest.getBirthDate() != null) {
+        if (employeeFromRequest.getBirthDate() != null &&
+            !employeeFromRequest.getBirthDate().equals(employeeFromDb.getBirthDate())){
             employeeFromDb.setBirthDate(employeeFromRequest.getBirthDate());
         }
 
-        if (employeeFromRequest.getWorksFrom() != null) {
+        if (employeeFromRequest.getWorksFrom() != null &&
+            !employeeFromRequest.getWorksFrom().equals(employeeFromDb.getWorksFrom())){
             employeeFromDb.setWorksFrom(employeeFromRequest.getWorksFrom());
         }
         return employeeRepository.saveAndFlush(employeeFromDb);
