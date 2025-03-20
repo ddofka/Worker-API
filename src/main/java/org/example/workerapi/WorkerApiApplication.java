@@ -20,7 +20,7 @@ public class WorkerApiApplication {
 	@EventListener(ApplicationReadyEvent.class)
 	public void test(){
 		employeeService.addTestEmployees();
-		employeeService.printAllEmployees();
+		//employeeService.printAllEmployees();
 	}
 
 }
