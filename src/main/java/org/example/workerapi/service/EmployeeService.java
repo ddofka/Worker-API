@@ -1,15 +1,19 @@
 package org.example.workerapi.service;
 
+import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.workerapi.entity.Department;
 import org.example.workerapi.entity.Employee;
 import org.example.workerapi.entity.Project;
+import org.example.workerapi.exception.EmployeeNotFoundException;
 import org.example.workerapi.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @RequiredArgsConstructor
@@ -17,12 +21,16 @@ import java.util.Random;
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
 
-    public List<Employee> findAllEmployees() {
+    public Employee findEmployeeById(Long id) {
+        return employeeRepository.findById(id).orElse(null);
+    }
+
+    public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
     public void printAllEmployees() {
-        findAllEmployees().forEach(System.out::println);
+        getAllEmployees().forEach(System.out::println);
     }
 
     public Employee addEmployee(Employee employee) {
@@ -53,7 +61,7 @@ public class EmployeeService {
                     .minusDays(random.nextInt(365));
 
             Employee employee = new Employee();
-            employee.setPersonalCode(1234567891 + i);
+            employee.setPersonalCode("1234567891" + i);
             employee.setName("Employee " + i);
             employee.setLastName("Last Name " + i);
             employee.setBirthDate(birthDate);
@@ -76,6 +84,51 @@ public class EmployeeService {
 
             addEmployee(employee);
         }
+    }
+
+    @Transactional
+    public void deleteEmployeeByID(Long id) {
+        Optional<Employee> maybeEmployeeFromDb = employeeRepository.findById(id);
+        if (maybeEmployeeFromDb.isEmpty()) {
+            throw new EmployeeNotFoundException("id=" + id);
+        }
+        employeeRepository.deleteById(id);
+    }
+
+    public Employee patchEmployeeById(Long id, Employee employeeFromRequest) {
+        Employee employeeFromDb = employeeRepository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException("id=" + id));
+//        if (maybeEmployeeFromDb.isEmpty()) {
+//            throw new EntityNotFoundException("Employee with id " + id + " not found");
+//        }
+//        Employee employeeFromDb = maybeEmployeeFromDb.get();
+
+        if (StringUtils.isNotBlank(employeeFromRequest.getPersonalCode()) &&
+            !employeeFromRequest.getPersonalCode().equals(employeeFromDb.getPersonalCode())){
+            employeeFromDb.setPersonalCode(employeeFromRequest.getPersonalCode());
+        }
+        if (StringUtils.isNotBlank(employeeFromRequest.getName()) &&
+                !employeeFromRequest.getName().equals(employeeFromDb.getName())){
+            employeeFromDb.setName(employeeFromRequest.getName());
+        }
+        if (StringUtils.isNotBlank(employeeFromRequest.getLastName()) &&
+                !employeeFromRequest.getLastName().equals(employeeFromDb.getLastName())){
+            employeeFromDb.setLastName(employeeFromRequest.getLastName());
+        }
+        if (StringUtils.isNotBlank(employeeFromRequest.getPosition()) &&
+                !employeeFromRequest.getPosition().equals(employeeFromDb.getPosition())){
+            employeeFromDb.setPosition(employeeFromRequest.getPosition());
+        }
+        if (employeeFromRequest.getBirthDate() != null &&
+            !employeeFromRequest.getBirthDate().equals(employeeFromDb.getBirthDate())){
+            employeeFromDb.setBirthDate(employeeFromRequest.getBirthDate());
+        }
+
+        if (employeeFromRequest.getWorksFrom() != null &&
+            !employeeFromRequest.getWorksFrom().equals(employeeFromDb.getWorksFrom())){
+            employeeFromDb.setWorksFrom(employeeFromRequest.getWorksFrom());
+        }
+        return employeeRepository.saveAndFlush(employeeFromDb);
     }
 
 }

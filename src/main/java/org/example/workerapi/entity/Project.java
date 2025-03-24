@@ -18,7 +18,7 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "project",cascade = CascadeType.ALL)
     private List<Employee> employees = new ArrayList<>();
 
 }
