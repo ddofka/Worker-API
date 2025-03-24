@@ -90,14 +90,14 @@ public class EmployeeService {
     public void deleteEmployeeByID(Long id) {
         Optional<Employee> maybeEmployeeFromDb = employeeRepository.findById(id);
         if (maybeEmployeeFromDb.isEmpty()) {
-            throw new EntityNotFoundException("Employee with id " + id + " not found");
+            throw new EmployeeNotFoundException("id=" + id);
         }
         employeeRepository.deleteById(id);
     }
 
     public Employee patchEmployeeById(Long id, Employee employeeFromRequest) {
         Employee employeeFromDb = employeeRepository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException("Employee with id " + id + " not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException("id=" + id));
 //        if (maybeEmployeeFromDb.isEmpty()) {
 //            throw new EntityNotFoundException("Employee with id " + id + " not found");
 //        }

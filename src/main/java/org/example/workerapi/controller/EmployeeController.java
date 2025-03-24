@@ -1,11 +1,12 @@
 package org.example.workerapi.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.workerapi.converter.EmployeeConverter;
+import org.example.workerapi.converter.SimpleRequestResponseMapper;
 import org.example.workerapi.dto.CreateEmployeeRequest;
 import org.example.workerapi.dto.GetEmployeeResponse;
 import org.example.workerapi.entity.Employee;
 import org.example.workerapi.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,23 +17,24 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final EmployeeConverter converter;
+    @Qualifier("simpleRequestResponseMapperImpl")
+    private final SimpleRequestResponseMapper mapper;
 
     @GetMapping
     public List<GetEmployeeResponse> getEmployeeList(@RequestParam(required = false) Long id) {
-        return converter.entityListToDto(employeeService.getAllEmployees());
+        return mapper.toResponseList(employeeService.getAllEmployees());
     }
 
     @GetMapping("/{id}")
     public GetEmployeeResponse getEmployeeById(@PathVariable Long id) {
-        return converter.entityToDto(employeeService.findEmployeeById(id));
+        return mapper.toResponse(employeeService.findEmployeeById(id));
     }
 
     @PostMapping
     public GetEmployeeResponse createEmployee(@RequestBody CreateEmployeeRequest request) {
-        Employee employee = converter.toEntity(request);
-        GetEmployeeResponse response = converter.entityToDto(employeeService.addEmployee(employee));
-        return response;
+        Employee employee = mapper.toEmployee(request);
+        Employee savedEmployee = employeeService.addEmployee(employee);
+        return mapper.toResponse(savedEmployee);
     }
 
     @DeleteMapping("/{id}")
@@ -42,8 +44,9 @@ public class EmployeeController {
 
     @PatchMapping("/{id}")
     public GetEmployeeResponse patchEmployeeById(@PathVariable Long id, @RequestBody CreateEmployeeRequest request) {
-        Employee employee = converter.toEntity(request);
-        return converter.entityToDto(employeeService.patchEmployeeById(id, employee));
+        Employee employee = mapper.toEmployee(request);
+        Employee updatedEmployee = employeeService.patchEmployeeById(id, employee);
+        return mapper.toResponse(updatedEmployee);
     }
 
 }
